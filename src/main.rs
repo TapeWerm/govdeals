@@ -1,13 +1,30 @@
 use scraper::{Html, Selector};
+use std::fmt;
 
 /// Table of auction items
 struct Deals {
-    names: Vec<String>,
+    items: Vec<String>,
     /// Expiry date
     dates: Vec<String>,
     /// Expiry time
     times: Vec<String>,
     prices: Vec<String>,
+}
+
+struct Deal {
+    item: String,
+    // Auction closes on date at time
+    date: String,
+    time: String,
+    price: String,
+}
+
+impl fmt::Display for Deal {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Item: {}", self.item)?;
+        write!(f, "Auction Close: {} {}", self.date, self.time)?;
+        write!(f, "Current Bid: {}", self.price)
+    }
 }
 
 /// PSU Surplus GovDeals parser
@@ -19,11 +36,11 @@ fn parse(doc: scraper::Html) -> Deals {
     let col4 = doc.select(&scol4);
     let col5 = doc.select(&scol5);
 
-    let sname = Selector::parse("div.highslide-caption a").unwrap();
-    let mut names: Vec<String> = Vec::new();
+    let sitem = Selector::parse("div.highslide-caption a").unwrap();
+    let mut items: Vec<String> = Vec::new();
     for x in col1 {
-        let name = x.select(&sname).next().unwrap().inner_html();
-        names.push(name);
+        let item = x.select(&sitem).next().unwrap().inner_html();
+        items.push(item);
     }
 
     let sdate = Selector::parse("label").unwrap();
@@ -47,7 +64,7 @@ fn parse(doc: scraper::Html) -> Deals {
     }
 
     Deals {
-        names,
+        items,
         dates,
         times,
         prices,
@@ -60,8 +77,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let doc = Html::parse_document(&body);
 
     let r = parse(doc);
-    for x in 0..r.names.len() {
-        println!("{}", r.names[x]);
+    for x in 0..r.items.len() {
+        println!("Item: {}", r.items[x]);
         println!("Auction close: {} {}", r.dates[x], r.times[x]);
         println!("Current bid: {}", r.prices[x]);
         println!();
@@ -94,7 +111,7 @@ fn test_parse() {
     let doc = Html::parse_document(&body);
     let r = parse(doc);
     assert_eq!(
-        r.names[0],
+        r.items[0],
         "Temptronic Titan SA148440 Thermochuck Chiller for EG4/200 AS-IS"
     );
     assert_eq!(r.dates[0], "6/14/2021");
