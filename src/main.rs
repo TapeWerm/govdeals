@@ -69,6 +69,27 @@ fn parse(doc: scraper::Html) -> Vec<Deal> {
             picture,
         });
     }
+
+    let spagebar = Selector::parse("#pagination_1").unwrap();
+    let spages = Selector::parse("ul li a").unwrap();
+    // There's a duplicate pagebar at the bottom
+    let topbar = doc.select(&spagebar).next().unwrap();
+    let pages = topbar.select(&spages);
+    for page in pages {
+        // >> next page button
+        if page.inner_html() == "&gt;&gt;" {
+            let mut nextpage: String = "https://www.govdeals.com/".to_owned();
+            nextpage.push_str(page.value().attr("href").unwrap());
+            println!("{}", nextpage);
+            let body = reqwest::blocking::get(nextpage).unwrap().text().unwrap();
+            let recurse = Html::parse_document(&body);
+            let r = parse(recurse);
+            for x in r {
+                deals.push(x);
+            }
+        }
+    }
+
     deals
 }
 
