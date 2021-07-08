@@ -1,15 +1,4 @@
 use scraper::{Html, Selector};
-use std::fmt;
-
-/// Table of auction items
-struct Deals {
-    items: Vec<String>,
-    /// Expiry date
-    dates: Vec<String>,
-    /// Expiry time
-    times: Vec<String>,
-    prices: Vec<String>,
-}
 
 struct Deal {
     item: String,
@@ -17,58 +6,49 @@ struct Deal {
     date: String,
     time: String,
     price: String,
-}
-
-impl fmt::Display for Deal {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Item: {}", self.item)?;
-        write!(f, "Auction Close: {} {}", self.date, self.time)?;
-        write!(f, "Current Bid: {}", self.price)
-    }
+    picture: String,
 }
 
 /// PSU Surplus GovDeals parser
-fn parse(doc: scraper::Html) -> Deals {
-    let scol1 = Selector::parse("#result_col_1").unwrap();
-    let scol4 = Selector::parse("#result_col_4").unwrap();
-    let scol5 = Selector::parse("#result_col_5").unwrap();
-    let col1 = doc.select(&scol1);
-    let col4 = doc.select(&scol4);
-    let col5 = doc.select(&scol5);
+fn parse(doc: scraper::Html) -> Vec<Deal> {
+    let srows = Selector::parse("#boxx_row").unwrap();
+    let rows = doc.select(&srows);
+    let mut deals: Vec<Deal> = Vec::new();
+    for row in rows {
+        let scol1 = Selector::parse("#result_col_1").unwrap();
+        let spicture = Selector::parse("a.highslide").unwrap();
+        let col1 = row.select(&scol1).next().unwrap();
+        let apicture = col1.select(&spicture).next().unwrap();
+        let picture = apicture.value().attr("href").unwrap().to_string();
 
-    let sitem = Selector::parse("div.highslide-caption a").unwrap();
-    let mut items: Vec<String> = Vec::new();
-    for x in col1 {
-        let item = x.select(&sitem).next().unwrap().inner_html();
-        items.push(item);
-    }
+        let scol2 = Selector::parse("#result_col_2").unwrap();
+        let sitem = Selector::parse("a").unwrap();
+        let col2 = row.select(&scol2).next().unwrap();
+        let item = col2.select(&sitem).next().unwrap().inner_html();
 
-    let sdate = Selector::parse("label").unwrap();
-    let stime = Selector::parse("label span").unwrap();
-    let mut dates: Vec<String> = Vec::new();
-    let mut times: Vec<String> = Vec::new();
-    for x in col4 {
-        let inner = x.select(&sdate).next().unwrap().inner_html();
-        let date = inner.split_whitespace().next().unwrap().to_string();
-        dates.push(date);
-        let time = x.select(&stime).next().unwrap().inner_html();
-        times.push(time);
-    }
+        let scol4 = Selector::parse("#result_col_4").unwrap();
+        let sdate = Selector::parse("label").unwrap();
+        let stime = Selector::parse("label span").unwrap();
+        let col4 = row.select(&scol4).next().unwrap();
+        let indate = col4.select(&sdate).next().unwrap().inner_html();
+        let date = indate.split_whitespace().next().unwrap().to_string();
+        let time = col4.select(&stime).next().unwrap().inner_html();
 
-    let sprice = Selector::parse("#bid_price").unwrap();
-    let mut prices: Vec<String> = Vec::new();
-    for x in col5 {
-        let inner = x.select(&sprice).next().unwrap().inner_html();
-        let price = inner.split_whitespace().next().unwrap().to_string();
-        prices.push(price);
-    }
+        let scol5 = Selector::parse("#result_col_5").unwrap();
+        let sprice = Selector::parse("#bid_price").unwrap();
+        let col5 = row.select(&scol5).next().unwrap();
+        let inprice = col5.select(&sprice).next().unwrap().inner_html();
+        let price = inprice.split_whitespace().next().unwrap().to_string();
 
-    Deals {
-        items,
-        dates,
-        times,
-        prices,
+        deals.push(Deal {
+            item,
+            date,
+            time,
+            price,
+            picture,
+        });
     }
+    deals
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -77,10 +57,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let doc = Html::parse_document(&body);
 
     let r = parse(doc);
-    for x in 0..r.items.len() {
-        println!("Item: {}", r.items[x]);
-        println!("Auction close: {} {}", r.dates[x], r.times[x]);
-        println!("Current bid: {}", r.prices[x]);
+    for x in r {
+        println!("Item: {}", x.item);
+        println!("Auction Close: {} {}", x.date, x.time);
+        println!("Current Bid: {}", x.price);
+        println!("Picture: https://www.govdeals.com{}", x.picture);
         println!();
     }
     Ok(())
@@ -91,30 +72,40 @@ fn test_parse() {
     let body = r#"
     <!DOCTYPE html>
     <meta charset="utf-8">
-    <div id="result_col_1"  class="col-4 col-sm-4 col-md-4 col-lg-2 col-xl-1 d-flex justify-content-start">
-        <a href="/photos/7123/7123_721_7.jpg" class="highslide" onClick="return hs.expand(this,{captionId: 'caption1'})" title="Temptronic Titan SA148440 Thermochuck Chiller for EG4/200 AS-IS">
-        <IMG src="/photos/7123/Thumbnails/7123_721_7.jpg" style="border-color:#999; margin-bottom:15px; margin-top:5px;" hspace="3" alt="Temptronic Titan SA148440 Thermochuck Chiller for EG4/200 AS-IS"></a>
-        <div class="highslide-caption" id="caption1"><a href="index.cfm?fa=Main.Item&itemid=721&acctid=7123">Temptronic Titan SA148440 Thermochuck Chiller for EG4/200 AS-IS</a></div>
-    </div>
-    <div id="result_col_4" name="result_col_4_1"  class="col-10 col-sm-10 col-md-10 col-lg-2 col-xl-2 px-1">
-        <span id="auct_lbl_srch" style="font-weight:bold;padding-left:10px;">Auction Close:</span>
-        <label for="shortcut1" style="padding-left:10px;">6/14/2021 &nbsp;&nbsp;
-        <span style="white-space:nowrap">7:30 PM ET</label></span>
-    </div>
-    <div align="center" id="result_col_5" name="result_col_5_1"  class="col-10 col-sm-10 col-md-10 col-lg-1 col-xl-2 px-1 py-1">
-        <span id="bid_lbl_srch" style="font-weight:bold;padding-left:10px;">Current Bid:&nbsp;</span>
-        <span id="bid_price">
-            $800.00
-        </span>
+    <div id="boxx_row" class="row m-0 p-0 mb-sm-3 mb-md-3 d-flex justify-content-center boxx"> <!-- ROW WITH CONTENT AND SHADOW -->
+        <div id="result_col_1" class="col-4 col-sm-4 col-md-4 col-lg-2 col-xl-1 d-flex justify-content-start">
+            <a href="/photos/7123/7123_746_7.jpg" class="highslide" onclick="return hs.expand(this,{captionId: 'caption1'})" title="Pallet of Dell Computers, HP Printers, etc.">
+                <img src="/photos/7123/Thumbnails/7123_746_7.jpg" style="border-color:#999; margin-bottom:15px; margin-top:5px;" alt="Pallet of Dell Computers, HP Printers, etc." hspace="3">
+            </a>
+            <div class="highslide-caption" id="caption1"><a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a></div>
+        </div>
+        <div id="result_col_2" class="col-6 col-sm-6 col-md-6 col-lg-2 col-xl-2" style="border-top:0px;border-bottom:0px;">
+            <a href="index.cfm?fa=Main.Item&amp;itemid=721&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a>
+            <span id="desc_extra">
+                <div class="small">ID: OIS025BP02-ATTACH5</div>
+            </span>
+            <button id="desc_more_btn_1" class="btn btn-sm btn-default" onclick="desc_more(1);" style="display: none;">more&nbsp;<i class="fas fa-chevron-circle-down"></i></button>
+            <button id="desc_less_btn_1" class="btn btn-sm btn-default" onclick="desc_less(1);" style="display: none;">less&nbsp;<i class="fas fa-chevron-circle-up"></i></button>
+        </div>
+        <div id="result_col_4" name="result_col_4_1"  class="col-10 col-sm-10 col-md-10 col-lg-2 col-xl-2 px-1">
+            <span id="auct_lbl_srch" style="font-weight:bold;padding-left:10px;">Auction Close:</span>
+            <label for="shortcut1" style="padding-left:10px;">7/9/2021 &nbsp;&nbsp;
+            <span style="white-space:nowrap">7:30 PM ET</label></span>
+        </div>
+        <div align="center" id="result_col_5" name="result_col_5_1"  class="col-10 col-sm-10 col-md-10 col-lg-1 col-xl-2 px-1 py-1">
+            <span id="bid_lbl_srch" style="font-weight:bold;padding-left:10px;">Current Bid:&nbsp;</span>
+            <span id="bid_price">
+                $1,090.00
+                <br>&nbsp;&nbsp;Bids:  27
+            </span>
+        </div>
     </div>
     "#;
     let doc = Html::parse_document(&body);
     let r = parse(doc);
-    assert_eq!(
-        r.items[0],
-        "Temptronic Titan SA148440 Thermochuck Chiller for EG4/200 AS-IS"
-    );
-    assert_eq!(r.dates[0], "6/14/2021");
-    assert_eq!(r.times[0], "7:30 PM ET");
-    assert_eq!(r.prices[0], "$800.00");
+    assert_eq!(r[0].item, "Pallet of Dell Computers, HP Printers, etc.");
+    assert_eq!(r[0].date, "7/9/2021");
+    assert_eq!(r[0].time, "7:30 PM ET");
+    assert_eq!(r[0].price, "$1,090.00");
+    assert_eq!(r[0].picture, "/photos/7123/7123_746_7.jpg");
 }
