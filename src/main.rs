@@ -6,6 +6,7 @@ struct Deal {
     date: String,
     time: String,
     price: String,
+    bids: u32,
     picture: String,
 }
 
@@ -39,12 +40,19 @@ fn parse(doc: scraper::Html) -> Vec<Deal> {
         let col5 = row.select(&scol5).next().unwrap();
         let inprice = col5.select(&sprice).next().unwrap().inner_html();
         let price = inprice.split_whitespace().next().unwrap().to_string();
+        let bids = inprice
+            .split_whitespace()
+            .nth(2)
+            .unwrap_or("0")
+            .parse::<u32>()
+            .unwrap();
 
         deals.push(Deal {
             item,
             date,
             time,
             price,
+            bids,
             picture,
         });
     }
@@ -60,7 +68,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for x in r {
         println!("Item: {}", x.item);
         println!("Auction Close: {} {}", x.date, x.time);
-        println!("Current Bid: {}", x.price);
+        println!("Current Bid: {} {} Bids", x.price, x.bids);
         println!("Picture: https://www.govdeals.com{}", x.picture);
         println!();
     }
@@ -100,6 +108,33 @@ fn test_parse() {
             </span>
         </div>
     </div>
+    <div id="boxx_row" class="row m-0 p-0 mb-sm-3 mb-md-3 d-flex justify-content-center boxx"> <!-- ROW WITH CONTENT AND SHADOW -->
+        <div id="result_col_1" class="col-4 col-sm-4 col-md-4 col-lg-2 col-xl-1 d-flex justify-content-start">
+            <a href="/photos/7123/7123_746_7.jpg" class="highslide" onclick="return hs.expand(this,{captionId: 'caption1'})" title="Pallet of Dell Computers, HP Printers, etc.">
+                <img src="/photos/7123/Thumbnails/7123_746_7.jpg" style="border-color:#999; margin-bottom:15px; margin-top:5px;" alt="Pallet of Dell Computers, HP Printers, etc." hspace="3">
+            </a>
+            <div class="highslide-caption" id="caption1"><a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a></div>
+        </div>
+        <div id="result_col_2" class="col-6 col-sm-6 col-md-6 col-lg-2 col-xl-2" style="border-top:0px;border-bottom:0px;">
+            <a href="index.cfm?fa=Main.Item&amp;itemid=721&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a>
+            <span id="desc_extra">
+                <div class="small">ID: OIS025BP02-ATTACH5</div>
+            </span>
+            <button id="desc_more_btn_1" class="btn btn-sm btn-default" onclick="desc_more(1);" style="display: none;">more&nbsp;<i class="fas fa-chevron-circle-down"></i></button>
+            <button id="desc_less_btn_1" class="btn btn-sm btn-default" onclick="desc_less(1);" style="display: none;">less&nbsp;<i class="fas fa-chevron-circle-up"></i></button>
+        </div>
+        <div id="result_col_4" name="result_col_4_1"  class="col-10 col-sm-10 col-md-10 col-lg-2 col-xl-2 px-1">
+            <span id="auct_lbl_srch" style="font-weight:bold;padding-left:10px;">Auction Close:</span>
+            <label for="shortcut1" style="padding-left:10px;">7/9/2021 &nbsp;&nbsp;
+            <span style="white-space:nowrap">7:30 PM ET</label></span>
+        </div>
+        <div align="center" id="result_col_5" name="result_col_5_1"  class="col-10 col-sm-10 col-md-10 col-lg-1 col-xl-2 px-1 py-1">
+            <span id="bid_lbl_srch" style="font-weight:bold;padding-left:10px;">Current Bid:&nbsp;</span>
+            <span id="bid_price">
+                $1,090.00
+            </span>
+        </div>
+    </div>
     "#;
     let doc = Html::parse_document(&body);
     let r = parse(doc);
@@ -107,5 +142,12 @@ fn test_parse() {
     assert_eq!(r[0].date, "7/9/2021");
     assert_eq!(r[0].time, "7:30 PM ET");
     assert_eq!(r[0].price, "$1,090.00");
+    assert_eq!(r[0].bids, 27);
     assert_eq!(r[0].picture, "/photos/7123/7123_746_7.jpg");
+    assert_eq!(r[1].item, "Pallet of Dell Computers, HP Printers, etc.");
+    assert_eq!(r[1].date, "7/9/2021");
+    assert_eq!(r[1].time, "7:30 PM ET");
+    assert_eq!(r[1].price, "$1,090.00");
+    assert_eq!(r[1].bids, 0);
+    assert_eq!(r[1].picture, "/photos/7123/7123_746_7.jpg");
 }
