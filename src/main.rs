@@ -19,8 +19,14 @@ fn parse(doc: scraper::Html) -> Vec<Deal> {
         let scol1 = Selector::parse("#result_col_1").unwrap();
         let spicture = Selector::parse("a.highslide").unwrap();
         let col1 = row.select(&scol1).next().unwrap();
-        let apicture = col1.select(&spicture).next().unwrap();
-        let picture = apicture.value().attr("href").unwrap().to_string();
+        let picture = col1
+            .select(&spicture)
+            .next()
+            .unwrap()
+            .value()
+            .attr("href")
+            .unwrap()
+            .to_string();
 
         let scol2 = Selector::parse("#result_col_2").unwrap();
         let sitem = Selector::parse("a").unwrap();
@@ -31,8 +37,15 @@ fn parse(doc: scraper::Html) -> Vec<Deal> {
         let sdate = Selector::parse("label").unwrap();
         let stime = Selector::parse("label span").unwrap();
         let col4 = row.select(&scol4).next().unwrap();
-        let indate = col4.select(&sdate).next().unwrap().inner_html();
-        let date = indate.split_whitespace().next().unwrap().to_string();
+        let date = col4
+            .select(&sdate)
+            .next()
+            .unwrap()
+            .inner_html()
+            .split_whitespace()
+            .next()
+            .unwrap()
+            .to_string();
         let time = col4.select(&stime).next().unwrap().inner_html();
 
         let scol5 = Selector::parse("#result_col_5").unwrap();
@@ -82,58 +95,64 @@ fn test_parse() {
     <meta charset="utf-8">
     <div id="boxx_row" class="row m-0 p-0 mb-sm-3 mb-md-3 d-flex justify-content-center boxx"> <!-- ROW WITH CONTENT AND SHADOW -->
         <div id="result_col_1" class="col-4 col-sm-4 col-md-4 col-lg-2 col-xl-1 d-flex justify-content-start">
-            <a href="/photos/7123/7123_746_7.jpg" class="highslide" onclick="return hs.expand(this,{captionId: 'caption1'})" title="Pallet of Dell Computers, HP Printers, etc.">
-                <img src="/photos/7123/Thumbnails/7123_746_7.jpg" style="border-color:#999; margin-bottom:15px; margin-top:5px;" alt="Pallet of Dell Computers, HP Printers, etc." hspace="3">
-            </a>
-            <div class="highslide-caption" id="caption1"><a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a></div>
-        </div>
+                <a href="/photos/7123/7123_746_7.jpg" class="highslide" onclick="return hs.expand(this,{captionId: 'caption1'})" title="Pallet of Dell Computers, HP Printers, etc.">
+                <img src="/photos/7123/Thumbnails/7123_746_7.jpg" style="border-color:#999; margin-bottom:15px; margin-top:5px;" alt="Pallet of Dell Computers, HP Printers, etc." hspace="3"></a>
+                    <div class="highslide-caption" id="caption1"><a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a></div>
+                </div>
         <div id="result_col_2" class="col-6 col-sm-6 col-md-6 col-lg-2 col-xl-2" style="border-top:0px;border-bottom:0px;">
-            <a href="index.cfm?fa=Main.Item&amp;itemid=721&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a>
+            <a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a>
             <span id="desc_extra">
-                <div class="small">ID: OIS025BP02-ATTACH5</div>
+                    <div class="small">ID: OIS025BP02-ATTACH5</div>
             </span>
             <button id="desc_more_btn_1" class="btn btn-sm btn-default" onclick="desc_more(1);" style="display: none;">more&nbsp;<i class="fas fa-chevron-circle-down"></i></button>
             <button id="desc_less_btn_1" class="btn btn-sm btn-default" onclick="desc_less(1);" style="display: none;">less&nbsp;<i class="fas fa-chevron-circle-up"></i></button>
-        </div>
-        <div id="result_col_4" name="result_col_4_1"  class="col-10 col-sm-10 col-md-10 col-lg-2 col-xl-2 px-1">
-            <span id="auct_lbl_srch" style="font-weight:bold;padding-left:10px;">Auction Close:</span>
-            <label for="shortcut1" style="padding-left:10px;">7/9/2021 &nbsp;&nbsp;
-            <span style="white-space:nowrap">7:30 PM ET</label></span>
-        </div>
-        <div align="center" id="result_col_5" name="result_col_5_1"  class="col-10 col-sm-10 col-md-10 col-lg-1 col-xl-2 px-1 py-1">
-            <span id="bid_lbl_srch" style="font-weight:bold;padding-left:10px;">Current Bid:&nbsp;</span>
-            <span id="bid_price">
+                </div>
+        <div id="result_col_3" name="result_col_3_1" class="col-10 col-sm-10 col-md-10 col-lg-2 col-xl-2" style="border-top:0px;border-bottom:0px;">
+                    <span id="loc_lbl_srch" style="font-weight:bold;">Location:</span>
+                    Portland, OR<br><br>
+                </div>
+        <div id="result_col_4" name="result_col_4_1" class="col-10 col-sm-10 col-md-10 col-lg-2 col-xl-2 px-1">
+                    <span id="auct_lbl_srch" style="font-weight:bold;padding-left:10px;">Auction Close:</span>
+                    <label for="shortcut1" style="padding-left:10px;">7/9/2021 &nbsp;&nbsp;
+                    <span style="white-space:nowrap">7:30 PM ET</span></label>
+                </div>
+        <div id="result_col_5" name="result_col_5_1" class="col-10 col-sm-10 col-md-10 col-lg-1 col-xl-2 px-1 py-1" align="center">
+                    <span id="bid_lbl_srch" style="font-weight:bold;padding-left:10px;">Current Bid:&nbsp;</span>
+                    <span id="bid_price">
                 $1,090.00
-                <br>&nbsp;&nbsp;Bids:  27
-            </span>
-        </div>
+                    <br>&nbsp;&nbsp;Bids:  27
+                    </span>
+                </div>
     </div>
     <div id="boxx_row" class="row m-0 p-0 mb-sm-3 mb-md-3 d-flex justify-content-center boxx"> <!-- ROW WITH CONTENT AND SHADOW -->
         <div id="result_col_1" class="col-4 col-sm-4 col-md-4 col-lg-2 col-xl-1 d-flex justify-content-start">
-            <a href="/photos/7123/7123_746_7.jpg" class="highslide" onclick="return hs.expand(this,{captionId: 'caption1'})" title="Pallet of Dell Computers, HP Printers, etc.">
-                <img src="/photos/7123/Thumbnails/7123_746_7.jpg" style="border-color:#999; margin-bottom:15px; margin-top:5px;" alt="Pallet of Dell Computers, HP Printers, etc." hspace="3">
-            </a>
-            <div class="highslide-caption" id="caption1"><a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a></div>
-        </div>
+                <a href="/photos/7123/7123_746_7.jpg" class="highslide" onclick="return hs.expand(this,{captionId: 'caption1'})" title="Pallet of Dell Computers, HP Printers, etc.">
+                <img src="/photos/7123/Thumbnails/7123_746_7.jpg" style="border-color:#999; margin-bottom:15px; margin-top:5px;" alt="Pallet of Dell Computers, HP Printers, etc." hspace="3"></a>
+                    <div class="highslide-caption" id="caption1"><a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a></div>
+                </div>
         <div id="result_col_2" class="col-6 col-sm-6 col-md-6 col-lg-2 col-xl-2" style="border-top:0px;border-bottom:0px;">
-            <a href="index.cfm?fa=Main.Item&amp;itemid=721&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a>
+            <a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a>
             <span id="desc_extra">
-                <div class="small">ID: OIS025BP02-ATTACH5</div>
+                    <div class="small">ID: OIS025BP02-ATTACH5</div>
             </span>
             <button id="desc_more_btn_1" class="btn btn-sm btn-default" onclick="desc_more(1);" style="display: none;">more&nbsp;<i class="fas fa-chevron-circle-down"></i></button>
             <button id="desc_less_btn_1" class="btn btn-sm btn-default" onclick="desc_less(1);" style="display: none;">less&nbsp;<i class="fas fa-chevron-circle-up"></i></button>
-        </div>
-        <div id="result_col_4" name="result_col_4_1"  class="col-10 col-sm-10 col-md-10 col-lg-2 col-xl-2 px-1">
-            <span id="auct_lbl_srch" style="font-weight:bold;padding-left:10px;">Auction Close:</span>
-            <label for="shortcut1" style="padding-left:10px;">7/9/2021 &nbsp;&nbsp;
-            <span style="white-space:nowrap">7:30 PM ET</label></span>
-        </div>
-        <div align="center" id="result_col_5" name="result_col_5_1"  class="col-10 col-sm-10 col-md-10 col-lg-1 col-xl-2 px-1 py-1">
-            <span id="bid_lbl_srch" style="font-weight:bold;padding-left:10px;">Current Bid:&nbsp;</span>
-            <span id="bid_price">
+                </div>
+        <div id="result_col_3" name="result_col_3_1" class="col-10 col-sm-10 col-md-10 col-lg-2 col-xl-2" style="border-top:0px;border-bottom:0px;">
+                    <span id="loc_lbl_srch" style="font-weight:bold;">Location:</span>
+                    Portland, OR<br><br>
+                </div>
+        <div id="result_col_4" name="result_col_4_1" class="col-10 col-sm-10 col-md-10 col-lg-2 col-xl-2 px-1">
+                    <span id="auct_lbl_srch" style="font-weight:bold;padding-left:10px;">Auction Close:</span>
+                    <label for="shortcut1" style="padding-left:10px;">7/9/2021 &nbsp;&nbsp;
+                    <span style="white-space:nowrap">7:30 PM ET</span></label>
+                </div>
+        <div id="result_col_5" name="result_col_5_1" class="col-10 col-sm-10 col-md-10 col-lg-1 col-xl-2 px-1 py-1" align="center">
+                    <span id="bid_lbl_srch" style="font-weight:bold;padding-left:10px;">Current Bid:&nbsp;</span>
+                    <span id="bid_price">
                 $1,090.00
-            </span>
-        </div>
+                    </span>
+                </div>
     </div>
     "#;
     let doc = Html::parse_document(&body);
