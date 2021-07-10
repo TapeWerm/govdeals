@@ -74,18 +74,20 @@ fn parse(doc: scraper::Html) -> Vec<Deal> {
     let spagebar = Selector::parse("#pagination_1").unwrap();
     let spages = Selector::parse("ul li a").unwrap();
     // There's a duplicate pagebar at the bottom
-    let topbar = doc.select(&spagebar).next().unwrap();
-    let pages = topbar.select(&spages);
-    for page in pages {
-        // >> next page button
-        if page.inner_html() == "&gt;&gt;" {
-            let mut nextpage: String = "https://www.govdeals.com/".to_owned();
-            nextpage.push_str(page.value().attr("href").unwrap());
-            let body = reqwest::blocking::get(nextpage).unwrap().text().unwrap();
-            let recurse = Html::parse_document(&body);
-            let r = parse(recurse);
-            for x in r {
-                deals.push(x);
+    let nextbar = doc.select(&spagebar).next();
+    if let Some(topbar) = nextbar {
+        let pages = topbar.select(&spages);
+        for page in pages {
+            // >> next page button
+            if page.inner_html() == "&gt;&gt;" {
+                let mut nextpage: String = "https://www.govdeals.com/".to_owned();
+                nextpage.push_str(page.value().attr("href").unwrap());
+                let body = reqwest::blocking::get(nextpage).unwrap().text().unwrap();
+                let recurse = Html::parse_document(&body);
+                let r = parse(recurse);
+                for x in r {
+                    deals.push(x);
+                }
             }
         }
     }
@@ -180,11 +182,6 @@ fn test_parse() {
                         </span>
                 </div>
     </div>
-    <div id="pagination_1" class="pagination col-sm-8 col-md-6 col-lg-4 col-xl-4 pagination-small" style="margin-top:10;">
-                <ul style="padding-left:0px;" align="left">
-                <li class="active"><a href="#">1</a></li>
-                </ul>
-                </div>
     "##;
     let doc = Html::parse_document(&body);
     let r = parse(doc);
