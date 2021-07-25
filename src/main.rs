@@ -1,3 +1,4 @@
+use htmlescape::decode_html;
 use scraper::{Html, Selector};
 
 struct Deal {
@@ -31,7 +32,8 @@ fn parse(doc: scraper::Html) -> Vec<Deal> {
         let scol2 = Selector::parse("#result_col_2").unwrap();
         let sitem = Selector::parse("a").unwrap();
         let col2 = row.select(&scol2).next().unwrap();
-        let item = col2.select(&sitem).next().unwrap().inner_html();
+        let item_raw = col2.select(&sitem).next().unwrap().inner_html();
+        let item = decode_html(&item_raw).unwrap();
 
         let scol4 = Selector::parse("#result_col_4").unwrap();
         let sdate = Selector::parse("label").unwrap();
@@ -154,12 +156,12 @@ fn test_parse() {
     </div>
     <div id="boxx_row" class="row m-0 p-0 mb-sm-3 mb-md-3 d-flex justify-content-center boxx"> <!-- ROW WITH CONTENT AND SHADOW -->
             <div id="result_col_1" class="col-4 col-sm-4 col-md-4 col-lg-2 col-xl-1 d-flex justify-content-start">
-                            <a href="/photos/7123/7123_746_7.jpg" class="highslide" onclick="return hs.expand(this,{captionId: 'caption1'})" title="Pallet of Dell Computers, HP Printers, etc.">
-                            <img src="/photos/7123/Thumbnails/7123_746_7.jpg" style="border-color:#999; margin-bottom:15px; margin-top:5px;" alt="Pallet of Dell Computers, HP Printers, etc." hspace="3"></a>
-                        <div class="highslide-caption" id="caption1"><a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a></div>
+                            <a href="/photos/7123/7123_746_7.jpg" class="highslide" onclick="return hs.expand(this,{captionId: 'caption1'})" title="Pallet of Dell Computers, HP Printers, &amp; etc.">
+                            <img src="/photos/7123/Thumbnails/7123_746_7.jpg" style="border-color:#999; margin-bottom:15px; margin-top:5px;" alt="Pallet of Dell Computers, HP Printers, &amp; etc." hspace="3"></a>
+                        <div class="highslide-caption" id="caption1"><a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, &amp; etc.</a></div>
                 </div>
             <div id="result_col_2" class="col-6 col-sm-6 col-md-6 col-lg-2 col-xl-2" style="border-top:0px;border-bottom:0px;">
-                    <a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a>
+                    <a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, &amp; etc.</a>
                     <span id="desc_extra">
                         <div class="small">ID: OIS025BP02-ATTACH5</div>
                     </span>
@@ -191,7 +193,7 @@ fn test_parse() {
     assert_eq!(r[0].price, "$1,090.00");
     assert_eq!(r[0].bids, 27);
     assert_eq!(r[0].picture, "/photos/7123/7123_746_7.jpg");
-    assert_eq!(r[1].item, "Pallet of Dell Computers, HP Printers, etc.");
+    assert_eq!(r[1].item, "Pallet of Dell Computers, HP Printers, & etc.");
     assert_eq!(r[1].date, "7/9/2021");
     assert_eq!(r[1].time, "7:30 PM ET");
     assert_eq!(r[1].price, "$1,090.00");
