@@ -118,71 +118,44 @@ fn test_parse() {
     let body = r##"
     <!DOCTYPE html>
     <meta charset="utf-8">
-    <div id="pagination_1" class="pagination col-sm-8 col-md-6 col-lg-4 col-xl-4 pagination-small" style="margin-top:10;">
-                <ul style="padding-left:0px;" align="left">
-                <li class="active"><a href="#">1</a></li>
-                </ul>
-                </div>
-    <div id="boxx_row" class="row m-0 p-0 mb-sm-3 mb-md-3 d-flex justify-content-center boxx"> <!-- ROW WITH CONTENT AND SHADOW -->
-            <div id="result_col_1" class="col-4 col-sm-4 col-md-4 col-lg-2 col-xl-1 d-flex justify-content-start">
-                            <a href="/photos/7123/7123_746_7.jpg" class="highslide" onclick="return hs.expand(this,{captionId: 'caption1'})" title="Pallet of Dell Computers, HP Printers, etc.">
-                            <img src="/photos/7123/Thumbnails/7123_746_7.jpg" style="border-color:#999; margin-bottom:15px; margin-top:5px;" alt="Pallet of Dell Computers, HP Printers, etc." hspace="3"></a>
-                        <div class="highslide-caption" id="caption1"><a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a></div>
-                </div>
-            <div id="result_col_2" class="col-6 col-sm-6 col-md-6 col-lg-2 col-xl-2" style="border-top:0px;border-bottom:0px;">
-                    <a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a>
-                    <span id="desc_extra">
-                        <div class="small">ID: OIS025BP02-ATTACH5</div>
-                    </span>
-                    <button id="desc_more_btn_1" class="btn btn-sm btn-default" onclick="desc_more(1);" style="display: none;">more&nbsp;<i class="fas fa-chevron-circle-down"></i></button>
-                    <button id="desc_less_btn_1" class="btn btn-sm btn-default" onclick="desc_less(1);" style="display: none;">less&nbsp;<i class="fas fa-chevron-circle-up"></i></button>
-                </div>
-            <div id="result_col_3" name="result_col_3_1" class="col-10 col-sm-10 col-md-10 col-lg-2 col-xl-2" style="border-top:0px;border-bottom:0px;">
-                        <span id="loc_lbl_srch" style="font-weight:bold;">Location:</span>
-                        Portland, OR<br><br>
-                </div>
-            <div id="result_col_4" name="result_col_4_1" class="col-10 col-sm-10 col-md-10 col-lg-2 col-xl-2 px-1">
-                        <span id="auct_lbl_srch" style="font-weight:bold;padding-left:10px;">Auction Close:</span>
-                        <label for="shortcut1" style="padding-left:10px;">7/9/2021 &nbsp;&nbsp;
-                        <span style="white-space:nowrap">7:30 PM ET</span></label>
-                </div>
-            <div id="result_col_5" name="result_col_5_1" class="col-10 col-sm-10 col-md-10 col-lg-1 col-xl-2 px-1 py-1" align="center">
-                        <span id="bid_lbl_srch" style="font-weight:bold;padding-left:10px;">Current Bid:&nbsp;</span>
-                        <span id="bid_price">
-                            $1,090.00
-                                    <br>&nbsp;&nbsp;Bids:  27
-                        </span>
-                </div>
+    <div id="pagination_1">
+        <ul>
+            <li><a href="#">1</a></li>
+        </ul>
     </div>
-    <div id="boxx_row" class="row m-0 p-0 mb-sm-3 mb-md-3 d-flex justify-content-center boxx"> <!-- ROW WITH CONTENT AND SHADOW -->
-            <div id="result_col_1" class="col-4 col-sm-4 col-md-4 col-lg-2 col-xl-1 d-flex justify-content-start">
-                            <a href="/photos/7123/7123_746_7.jpg" class="highslide" onclick="return hs.expand(this,{captionId: 'caption1'})" title="Pallet of Dell Computers, HP Printers, &amp; etc.">
-                            <img src="/photos/7123/Thumbnails/7123_746_7.jpg" style="border-color:#999; margin-bottom:15px; margin-top:5px;" alt="Pallet of Dell Computers, HP Printers, &amp; etc." hspace="3"></a>
-                        <div class="highslide-caption" id="caption1"><a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, &amp; etc.</a></div>
-                </div>
-            <div id="result_col_2" class="col-6 col-sm-6 col-md-6 col-lg-2 col-xl-2" style="border-top:0px;border-bottom:0px;">
-                    <a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, &amp; etc.</a>
-                    <span id="desc_extra">
-                        <div class="small">ID: OIS025BP02-ATTACH5</div>
-                    </span>
-                    <button id="desc_more_btn_1" class="btn btn-sm btn-default" onclick="desc_more(1);" style="display: none;">more&nbsp;<i class="fas fa-chevron-circle-down"></i></button>
-                    <button id="desc_less_btn_1" class="btn btn-sm btn-default" onclick="desc_less(1);" style="display: none;">less&nbsp;<i class="fas fa-chevron-circle-up"></i></button>
-                </div>
-            <div id="result_col_3" name="result_col_3_1" class="col-10 col-sm-10 col-md-10 col-lg-2 col-xl-2" style="border-top:0px;border-bottom:0px;">
-                        <span id="loc_lbl_srch" style="font-weight:bold;">Location:</span>
-                        Portland, OR<br><br>
-                </div>
-            <div id="result_col_4" name="result_col_4_1" class="col-10 col-sm-10 col-md-10 col-lg-2 col-xl-2 px-1">
-                        <span id="auct_lbl_srch" style="font-weight:bold;padding-left:10px;">Auction Close:</span>
-                        <label for="shortcut1" style="padding-left:10px;">7/9/2021 &nbsp;&nbsp;
-                        <span style="white-space:nowrap">7:30 PM ET</span></label>
-                </div>
-            <div id="result_col_5" name="result_col_5_1" class="col-10 col-sm-10 col-md-10 col-lg-1 col-xl-2 px-1 py-1" align="center">
-                        <span id="bid_lbl_srch" style="font-weight:bold;padding-left:10px;">Current Bid:&nbsp;</span>
-                        <span id="bid_price">
-                            $1,090.00
-                        </span>
-                </div>
+    <div id="boxx_row">
+        <div id="result_col_1">
+            <a href="/photos/7123/7123_746_7.jpg" class="highslide">img</a>
+        </div>
+        <div id="result_col_2">
+            <a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, etc.</a>
+        </div>
+        <div id="result_col_4">
+            <label>7/9/2021 &nbsp;&nbsp;
+                <span>7:30 PM ET</span>
+            </label>
+        </div>
+        <div id="result_col_5">
+            <span id="bid_price">$1,090.00
+                <br>&nbsp;&nbsp;Bids:  27
+            </span>
+        </div>
+    </div>
+    <div id="boxx_row">
+        <div id="result_col_1">
+            <a href="/photos/7123/7123_746_7.jpg" class="highslide">img</a>
+        </div>
+        <div id="result_col_2">
+            <a href="index.cfm?fa=Main.Item&amp;itemid=746&amp;acctid=7123">Pallet of Dell Computers, HP Printers, & etc.</a>
+        </div>
+        <div id="result_col_4">
+            <label>7/9/2021 &nbsp;&nbsp;
+                <span>7:30 PM ET</span>
+            </label>
+        </div>
+        <div id="result_col_5">
+            <span id="bid_price">$1,090.00</span>
+        </div>
     </div>
     "##;
     let doc = Html::parse_document(&body);
