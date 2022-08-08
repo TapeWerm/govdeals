@@ -98,7 +98,11 @@ fn parse(doc: scraper::Html) -> Vec<Deal> {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let body = reqwest::blocking::get("https://www.govdeals.com/index.cfm?fa=Main.AdvSearchResultsNew&searchPg=Classic&inv_num=&category=00&kWord=&kWordSelect=2&sortBy=ad&agency=7123&state=&country=&locID=&timing=bySimple&locationType=state&timeType=&timingWithin=1")?
+    let client = reqwest::blocking::Client::builder()
+        .user_agent("Mozilla/5.0 (X11; Linux x86_64)")
+        .build()?;
+    let body = client.get("https://www.govdeals.com/index.cfm?fa=Main.AdvSearchResultsNew&searchPg=Classic&inv_num=&category=00&kWord=&kWordSelect=2&sortBy=ad&agency=7123&state=&country=&locID=&timing=bySimple&locationType=state&timeType=&timingWithin=1")
+        .send()?
         .text()?;
     let doc = Html::parse_document(&body);
 
