@@ -84,7 +84,11 @@ fn parse(doc: scraper::Html) -> Vec<Deal> {
             if page.inner_html() == "&gt;&gt;" {
                 let mut nextpage: String = "https://www.govdeals.com/".to_owned();
                 nextpage.push_str(page.value().attr("href").unwrap());
-                let body = reqwest::blocking::get(nextpage).unwrap().text().unwrap();
+                let client = reqwest::blocking::Client::builder()
+                    .user_agent("Mozilla/5.0 (X11; Linux x86_64)")
+                    .build()
+                    .unwrap();
+                let body = client.get(nextpage).send().unwrap().text().unwrap();
                 let recurse = Html::parse_document(&body);
                 let r = parse(recurse);
                 for x in r {
